@@ -1,0 +1,31 @@
+name: aws-linux-app-sap-billing-batch
+
+on:
+  workflow_dispatch:
+    inputs:
+      appVersion:
+        required: true
+        type: string
+
+env:
+  repoPrefix: CASHMGMT-APTEBJ
+
+  
+jobs:
+  account-validation-api-image:
+    uses: dyedurham/CASHMGMT-ecs-generic-template/.github/workflows/ecs.yml@main
+    with:
+      product: 'apt'
+      repo: 'CASHMGMT-APTEBJ-aws-linux-app-sap-billing-batch'
+      appVersion: '${{ inputs.appVersion }}'
+      imageName: 'sap-billing-batch'
+      rpmPackageName: 'sap-billing-${{ inputs.appVersion }}'
+      entrypoint: '/opt/apt/sap-billing/sap-billing.jar", "--spring.config.location=file:/opt/apt/sap-billing/'
+      app: batch
+      ecr-app: app
+      scripts:  'scripts/upload-config.sh'
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.APT_NONP_AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.APT_NONP_AWS_SECRET_ACCESS_KEY }}
+      TOKEN_GH: ${{ secrets.TOKEN_GH }}
+      
